@@ -3,3 +3,8 @@
 /online-applications-skin/images/button_refinesearch.gif
 /online-applications-skin/images/help.gif
 /online-applications-skin/images/button_print.gif
+/online-applications-skin/images/ico_measure.gif
+/online-applications-skin/images/ico_view.gif
+/online-applications-skin/images/button_track.gif
+/online-applications-skin/images/sprite.gif
+/online-applications-skin/images/sprite_colour.png
