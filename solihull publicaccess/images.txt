@@ -1,0 +1,5 @@
+/online-applications-skin/images/ico_comment.gif
+/online-applications-skin/images/ajax-loader.gif
+/online-applications-skin/images/button_refinesearch.gif
+/online-applications-skin/images/help.gif
+/online-applications-skin/images/button_print.gif
