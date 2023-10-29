@@ -22,18 +22,26 @@
     var logEl = document.createElement("div");
     logEl.id="console";
     //window.jobs=[];
+    //dlBtn
 
     window.ripper = {
         applicationList: ()=>[...document.querySelectorAll("#Application li")].map(x=>{
             var t = x.innerText.split("\n\n"),y=t[1].split(" | ").map(z=>z.split(": ")[1]),year=+y[0].split("/")[1],a=x.querySelector("a").href.replace("&activeTab=summary","")+"activeTab=";
+
+            var dl = document.createElement("input");
+            dl.type="checkbox";
+            dl.title = "Download documents";
+
+            x.querySelector("a").before(dl);
+
             x.querySelector("a").addEventListener("click",e=>{
                 e.preventDefault();
-                ripper.newJob(e.target.href.replace("activeTab=summary","activeTab=printPreview"))
+                ripper.newJob(e.target.href.replace("activeTab=summary","activeTab=printPreview"),dl.checked)
             });
             x.dataset.year=year;
             return {id:y[0],title:t[0],status:y[1],url:a,year:year,el:x};
         }).sort((a, b) => a.year - b.year).reverse(),
-        newJob: async u=>{
+        newJob: async (u,dl)=>{
             var job = {
                 keyVal:u.split("&").slice(1).filter(b=>b.includes("keyVal="))[0].split("=")[1]
             };
@@ -59,9 +67,6 @@
             logEl.prepend(jEl);
 
             job.log("Job initiated: " + job.keyVal);
-
-
-
             job.log("fetching details..",5000);
             jEl.dataset.status = "running";
             var html = await(await fetch(u)).text();
@@ -84,15 +89,32 @@
             jEl.dataset.log = data.Reference + " - " + data.Status + ": " + (data.Decision||data["Expiry Date"]);
 
             var blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json" });
+            var dlEl = document.createElement('a');
+            dlEl.innerText = data.Reference.replace(/\//g,"-")+".json";
+            dlEl.setAttribute("style", "color:#fff!important" );
+            dlEl.setAttribute("href",     URL.createObjectURL(blob)     );
+            dlEl.setAttribute("download", data.Reference.replace(/\//g,"-")+".json");
+            job.log("Converted file: ").append(dlEl);
 
-            var dl = document.createElement('a');
-            dl.innerText = data.Reference.replace(/\//g,"-")+".json";
-            dl.setAttribute("style", "color:#fff!important" );
-            dl.setAttribute("href",     URL.createObjectURL(blob)     );
-            dl.setAttribute("download", data.Reference.replace(/\//g,"-")+".json");
-            //dlAnchorElem.click();
+            if (dl && data.Documents>0){
+                job.log("fetching documents ("+data.Documents+") list..",8000);
+                jEl.dataset.status = "running";
+                html = await(await fetch(u.replace("activeTab=printPreview","activeTab=documents"))).text();
 
-            job.log("Converted file: ").append(dl);
+                jEl.dataset.status = "parsing";
+                job.log("fetched list");
+                dom=(new DOMParser()).parseFromString(html,"text/html"),
+                    data= {};
+                dom.querySelectorAll("#caseDownloadForm input.bulkCheck").forEach(i=>i.checked=true);
+                var fd = new FormData(dom.querySelector("#caseDownloadForm"),dom.querySelector("#caseDownloadForm #downloadFiles"));
+                //ODO finish his shi
+
+                for (const [key, value] of fd) {
+                    console.log(`${key}: ${value}\n`);
+                }
+
+                console.log(dom.querySelector("form#caseDownloadForm").outerHTML);
+            }
             //console.log(dom.querySelector("#popupContainer").outerHTML);
             //console.log(data);
 
