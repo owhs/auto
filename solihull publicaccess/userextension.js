@@ -65,11 +65,11 @@
             logEl.prepend(jEl);
 
             job.log("Job initiated: " + job.keyVal);
-            job.log("fetching details..",5000);
+            job.log("Fetching details..",5000);
             jEl.dataset.status = "running";
             var html = await(await fetch(u)).text();
 
-            job.log("parsing details..");
+            job.log("Parsing details..");
             jEl.dataset.status = "parsing";
             var dom=(new DOMParser()).parseFromString(html,"text/html"),
                 data= {};
@@ -98,12 +98,12 @@
             dlEl.click();
 
             if (dl && data.Documents>0){
-                job.log("fetching documents ("+data.Documents+") list..",8000);
+                job.log("Fetching documents ("+data.Documents+") list..",8000);
                 jEl.dataset.status = "running";
                 html = await(await fetch(u.replace("activeTab=printPreview","activeTab=documents"))).text();
 
                 jEl.dataset.status = "parsing";
-                job.log("fetched list");
+                job.log("Parsing list");
                 dom=(new DOMParser()).parseFromString(html,"text/html");
                 dom.querySelectorAll("#caseDownloadForm input.bulkCheck").forEach(i=>i.checked=true);
 
@@ -112,7 +112,7 @@
                     fd.append(pair[0], pair[1]);
                 }
 
-                job.log("zipping documents ("+data.Documents+")...",1000*60*5);
+                job.log("Fetching zipped documents ("+data.Documents+")...",1000*60*5);
                 jEl.dataset.status = "running";
                 var f = await fetch(location.origin+"/online-applications/download/", {
                     "headers": {
@@ -129,7 +129,7 @@
                     "mode": "cors",
                     "credentials": "include"
                 });
-                job.log("creating blob",1000*60*1);
+                job.log("Creating blob",1000*60*1);
                 jEl.dataset.status = "parsing";
 
                 var a = document.createElement("a");
@@ -140,7 +140,7 @@
                 a.click();
             }
 
-            job.log("complete",0);
+            job.log("Job complete",0);
             jEl.dataset.status = "done";
 
         }
