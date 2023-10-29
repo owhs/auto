@@ -12,7 +12,8 @@
 // @run-at        document-end
 // ==/UserScript==
 
-//https://publicaccess.solihull.gov.uk/online-applications/propertyDetails.do?activeTab=relatedCases&keyVal=O6P7S9OE03G00
+// https://publicaccess.solihull.gov.uk/online-applications/propertyDetails.do?activeTab=relatedCases&keyVal=O6P7S9OE03G00
+// https://publicaccess.tewkesbury.gov.uk/online-applications/propertyDetails.do?activeTab=relatedCases&keyVal=000FE8QDLI000
 
 (function() {
     'use strict';
