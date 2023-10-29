@@ -104,17 +104,40 @@
 
                 jEl.dataset.status = "parsing";
                 job.log("fetched list");
-                dom=(new DOMParser()).parseFromString(html,"text/html"),
-                    data= {};
+                dom=(new DOMParser()).parseFromString(html,"text/html");
                 dom.querySelectorAll("#caseDownloadForm input.bulkCheck").forEach(i=>i.checked=true);
-                var fd = new FormData(dom.querySelector("#caseDownloadForm"),dom.querySelector("#caseDownloadForm #downloadFiles"));
-                //ODO finish his shi
 
-                //for (const [key, value] of fd) {
-                //    console.log(`${key}: ${value}\n`);
-                //}
+                const fd = new URLSearchParams();
+                for (const pair of new FormData(dom.querySelector("#caseDownloadForm"))) {
+                    fd.append(pair[0], pair[1]);
+                }
 
-                //console.log(dom.querySelector("form#caseDownloadForm").outerHTML);
+                job.log("zipping documents ("+data.Documents+")...",1000*60*5);
+                jEl.dataset.status = "running";
+                var f = await fetch(location.origin+"/online-applications/download/", {
+                    "headers": {
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                        "cache-control": "no-cache",
+                        "content-type": "application/x-www-form-urlencoded",
+                        "pragma": "no-cache",
+                        "upgrade-insecure-requests": "1"
+                    },
+                    "referrer": u.replace("activeTab=printPreview","activeTab=documents"),
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": fd,
+                    "method": "POST",
+                    "mode": "cors",
+                    "credentials": "include"
+                });
+                job.log("creating blob",1000*60*1);
+                jEl.dataset.status = "parsing";
+
+                var a = document.createElement("a");
+                a.href = window.URL.createObjectURL(await f.blob());
+                a.setAttribute("style", "color:#fff!important" );
+                a.download = a.innerText = decodeURIComponent(data.Reference.replace(/\//g,"-")).replace(/\//g,"-")+".zip";
+                job.log("Converted file: ").append(a);
+                a.click();
             }
 
             job.log("complete",0);
@@ -125,7 +148,7 @@
     var datayr = ((x,n)=>Array(x-n+1).fill().map((z,i)=>"[data-year='"+(x-i)+"']>[data-year='"+(x-i)+"']").join(",")+"{display:block!important}");
     var dlBtn = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAtElEQVR4nN3TMQ7CMAxA0T9BJ84FqCeBOwAjF2RjomMXmBmMIgWpslI1dpMOtWSlqpK81nFgjXEEOkAy8uYBcjcXL/Jf2E7kG/jGufcagHgRCyAexAoI8Bk8FwPaEbBIe/bA1QpY27O3AqkJosYNcBkpYzYQ8gTsE8AT2M0FHkATR1HANtZ+FhC+/KwWSOIv3YB+Vwyo3kUH4FXzHlS/yYsBnfEsZJChxJNhOQtRm4cWX1n8ACZG49HKmv+eAAAAAElFTkSuQmCC';
 
-    var css = "*{user-select:none}div#idox div#pa #toolbar.js,div#idox div#pa div#header,div#idox div#pa div#footer,#searchresultsback,.pagehelp,#print,#breadcrumbs,#poweredBy{display:none!important}div#relatedItems>div{max-height:70px;overflow:hidden}div#relatedItems>div>h2{cursor:pointer}div#relatedItems>div.active{max-height:100%}#Application>ul>li[data-year]{display:none}div#idox div#pa #breadcrumbs+.container{width:49%;margin-left:0;padding:20px;border-right:1px solid #215a6d}"+
+    var css = "*{user-select:none}div#idox div#pa #toolbar.js,div#idox div#pa div#header,div#idox div#pa div#footer,#searchresultsback,.pagehelp,#print,#breadcrumbs,#poweredBy{display:none!important}div#relatedItems>div{max-height:70px;overflow:hidden}div#relatedItems>div>h2{cursor:pointer}div#relatedItems>div.active{max-height:100%}#Application>ul>li[data-year]{display:none}div#idox div#pa #breadcrumbs+.container{width:49%;margin-left:0;padding:0 20px;border-right:1px solid #215a6d;overflow:overlay;height:100%;position:absolute}"+
         "div#console{position:fixed;top:0;width:calc(50% - 21px);height:100%;right:1px;bottom:1px;background:#000e;overflow:auto;font-family:monospace;color:#ccc;padding:0 10px;border:1px solid #292929}#console>div{border:1px solid #555;margin: 10px 0 0;border-radius:3px;overflow:hidden}#console>div:before{content:attr(id)': ('attr(data-status)') 'attr(data-log);display:block;background:#222;padding:0 6px;height:32px;line-height:32px}#console>div>div{font-size:medium;margin-left:10px}#console>div>div:hover,#console>div:hover:before{color:#fff}#console>div>div:before{content:attr(data-time)': ';font-size:smaller}";
     var styleEl = document.createElement("style");
     styleEl.innerHTML=css;
