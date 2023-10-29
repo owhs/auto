@@ -22,8 +22,6 @@
 
     var logEl = document.createElement("div");
     logEl.id="console";
-    //window.jobs=[];
-    //dlBtn
 
     window.ripper = {
         applicationList: ()=>[...document.querySelectorAll("#Application li")].map(x=>{
@@ -63,7 +61,6 @@
                 if(to>0) currjob = setTimeout(()=>en.style.color="red",to);
                 return en;
             };
-            //window.jobs.append(job);
 
             logEl.prepend(jEl);
 
@@ -110,14 +107,12 @@
                 var fd = new FormData(dom.querySelector("#caseDownloadForm"),dom.querySelector("#caseDownloadForm #downloadFiles"));
                 //ODO finish his shi
 
-                for (const [key, value] of fd) {
-                    console.log(`${key}: ${value}\n`);
-                }
+                //for (const [key, value] of fd) {
+                //    console.log(`${key}: ${value}\n`);
+                //}
 
-                console.log(dom.querySelector("form#caseDownloadForm").outerHTML);
+                //console.log(dom.querySelector("form#caseDownloadForm").outerHTML);
             }
-            //console.log(dom.querySelector("#popupContainer").outerHTML);
-            //console.log(data);
 
             job.log("complete",0);
             jEl.dataset.status = "done";
