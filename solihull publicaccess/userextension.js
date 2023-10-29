@@ -112,7 +112,8 @@
                     fd.append(pair[0], pair[1]);
                 }
 
-                job.log("Fetching zipped documents ("+data.Documents+")...",1000*60*5);
+
+                job.log("Fetching zipped documents ("+data.Documents+") ~"+(data.Documents*2.5)+"seconds...",1000*data.Documents*3);
                 jEl.dataset.status = "running";
                 var f = await fetch(location.origin+"/online-applications/download/", {
                     "headers": {
@@ -134,7 +135,7 @@
                     job.log("Job failed",0);
                     jEl.dataset.status = "failed";
                 });
-                job.log("Creating blob",1000*60*1);
+                job.log("Creating blob ~"+(data.Documents*0.65)+"seconds",1000*data.Documents);
                 jEl.dataset.status = "parsing";
 
                 var a = document.createElement("a");
