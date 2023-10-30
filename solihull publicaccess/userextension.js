@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name         PublicAccess & EPortal Advanced UI
-// @namespace    PublicAccess & EPortal Ripper
+// @name         PublicAccess Advanced UI
+// @namespace    PublicAccess Ripper
 // @version      0.1
 // @description  More Advanced Systems
 // @author       owhs
 // @match        https://publicaccess.solihull.gov.uk/*
 // @match        https://publicaccess.tewkesbury.gov.uk/*
-// @match        https://publicaccess.*/*
+// @include      https://publicaccess.*.gov.uk/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=solihull.gov.uk
 // @grant        none
-// @run-at        document-end
+// @run-at       document-end
 // ==/UserScript==
 
 // https://publicaccess.solihull.gov.uk/online-applications/propertyDetails.do?activeTab=relatedCases&keyVal=O6P7S9OE03G00
@@ -154,7 +154,7 @@
     var datayr = ((x,n)=>Array(x-n+1).fill().map((z,i)=>"[data-year='"+(x-i)+"']>[data-year='"+(x-i)+"']").join(",")+"{display:block!important}");
     var dlBtn = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAtElEQVR4nN3TMQ7CMAxA0T9BJ84FqCeBOwAjF2RjomMXmBmMIgWpslI1dpMOtWSlqpK81nFgjXEEOkAy8uYBcjcXL/Jf2E7kG/jGufcagHgRCyAexAoI8Bk8FwPaEbBIe/bA1QpY27O3AqkJosYNcBkpYzYQ8gTsE8AT2M0FHkATR1HANtZ+FhC+/KwWSOIv3YB+Vwyo3kUH4FXzHlS/yYsBnfEsZJChxJNhOQtRm4cWX1n8ACZG49HKmv+eAAAAAElFTkSuQmCC';
 
-    var css = "*{user-select:none}div#idox div#pa #toolbar.js,div#idox div#pa div#header,div#idox div#pa div#footer,#searchresultsback,.pagehelp,#print,#breadcrumbs,#poweredBy{display:none!important}div#relatedItems>div{max-height:70px;overflow:hidden}div#relatedItems>div>h2{cursor:pointer}div#relatedItems>div.active{max-height:100%}#Application>ul>li[data-year]{display:none}div#idox div#pa #breadcrumbs+.container{width:50%;margin-left:0;padding:0 20px;border-right:1px solid #215a6d;overflow:overlay;height:100%;position:absolute}html.js,html.js body{overflow:hidden}"+
+    var css = "*{user-select:none}div#idox div#pa #toolbar.js,div#idox div#pa div#header,div#idox div#pa div#footer,#searchresultsback,.pagehelp,#print,#breadcrumbs,#poweredBy,form.hidden{display:none!important}div#relatedItems>div{max-height:70px;overflow:hidden}div#relatedItems>div>h2{cursor:pointer}div#relatedItems>div.active{max-height:100%}#Application>ul>li[data-year]{display:none}div#idox div#pa #breadcrumbs+.container{width:50%;margin-left:0;padding:0 20px;border-right:1px solid #215a6d;overflow:overlay;height:100%;position:absolute}html.js,html.js body{overflow:hidden}"+
         "div#console{position:fixed;top:0;width:calc(50% - 21px);height:100%;right:1px;bottom:1px;background:#000e;overflow:auto;font-family:monospace;color:#ccc;padding:0 10px;border:1px solid #292929}#console>div{border:1px solid #555;margin: 10px 0 0;border-radius:3px;overflow:hidden}#console>div:before{content:attr(id)': ('attr(data-status)') 'attr(data-log);display:block;background:#222;padding:0 6px;height:32px;line-height:32px}#console>div>div{font-size:medium;margin-left:10px}#console>div>div:hover,#console>div:hover:before{color:#fff}#console>div>div:before{content:attr(data-time)': ';font-size:smaller}";
     var styleEl = document.createElement("style");
     styleEl.innerHTML=css;
@@ -168,7 +168,7 @@
         document.querySelectorAll("#relatedItems>div>h2").forEach(x=>x.addEventListener("click",e=>x.parentElement.classList.toggle("active")));
         var appTab = document.querySelector("#Application");
         appTab.classList.add("active");
-        appTab.querySelector("h2").outerHTML += '<ul class="tabs"><li><a href="javascript:void(0)"><span>All</span></a></li>'+years.map(x=>'<li><a href="javascript:void(0)"><span>'+x+'</span></a></li>').join("")+"</ul>";
+        appTab.querySelector("#Application>*:first-child").outerHTML += '<form class="hidden"><input class="text" placeholder="search" style="width:calc(100% - 30px);outline:0" /></form><ul class="tabs"><li><a href="javascript:void(0)"><span>All</span></a></li>'+years.map(x=>'<li><a href="javascript:void(0)"><span>'+x+'</span></a></li>').join("")+"</ul>";
         document.querySelectorAll("#Application .tabs>li>a").forEach(x=>x.addEventListener("click",e=>{
             document.querySelectorAll("#Application .tabs>li>a.active").forEach(z=>z.classList.remove("active"));
             x.classList.add("active")
@@ -177,5 +177,15 @@
         document.querySelector("#Application .tabs>li>a").click();
 
         document.querySelector("#pa>#breadcrumbs+div.container").after(logEl);
+
+        window.onkeydown=function (e) {
+            var f = document.querySelector("#Application>form"), i = f.querySelector("input");
+            if (e.code === "KeyF" && e.ctrlKey){
+                e.preventDefault();
+                var vis = !f.classList.contains("hidden");
+                f.classList.toggle("hidden");
+                if (!vis) i.focus();
+            }
+        }
     }
 })();
